@@ -1,0 +1,280 @@
+
+							Warewulf
+							````````
+
+Take to machines 
+1st machine is main machine			2nd machine is normal user for boot
+centos or rocky linux					without os
+ram - 2gb								ram - 2gb
+hdd - 20gb								hdd - 20gb
+core - 2								core - 2
+processor - 2							processor - 2
+Network adapter - Nat, hostonly			Network adapter - hostonly
+
+
+
+[root@warewulf ~]# hostnamectl set-hostname warewulf.lab
+
+[root@warewulf ~]# nmtui
+	- set static ip of hostonly network
+	- i am taking this ip addr - 192.168.200.20
+
+[root@warewulf ~]# vi /etc/hosts
+	- set main NAT ip addr in this file
+	- 192.168.144.162 warewulf.lab
+
+[root@warewulf ~]# vi /etc/selinux/config
+	- disable selinux=disabled
+
+[root@warewulf ~]# setenforce 0
+
+[root@warewulf ~]# systemctl stop firewalld
+
+[root@warewulf ~]# systemctl disable firewalld
+
+[root@warewulf ~]# yum install -y https://repo.ctrliq.com/rhel/8/ciq-release.rpm
+
+[root@warewulf ~]# yum install -y warewulf
+CIQ Stable                                                        12 kB/s |  32 kB     00:02    
+Last metadata expiration check: 0:00:01 ago on Fri 04 Nov 2022 02:42:11 PM EDT.
+Dependencies resolved.
+=================================================================================================
+ Package                  Architecture   Version                         Repository         Size
+=================================================================================================
+Installing:
+ warewulf                 x86_64         4.3.0-1.git_235c23c.el8         ciq               8.3 M
+Installing dependencies:
+ bind-export-libs         x86_64         32:9.11.36-3.el8_6.1            baseos            1.1 M
+ dhcp-common              noarch         12:4.3.6-47.el8                 baseos            206 k
+ dhcp-libs                x86_64         12:4.3.6-47.el8                 baseos            147 k
+ dhcp-server              x86_64         12:4.3.6-47.el8                 baseos            529 k
+ tftp-server              x86_64         5.2-24.el8                      appstream          49 k
+ 
+Transaction Summary
+=================================================================================================
+Install  6 Packages
+ 
+Total download size: 10 M
+Installed size: 31 M
+Downloading Packages:
+(1/6): dhcp-common-4.3.6-47.el8.noarch.rpm                       902 kB/s | 206 kB     00:00    
+(2/6): dhcp-libs-4.3.6-47.el8.x86_64.rpm                         3.1 MB/s | 147 kB     00:00    
+(3/6): tftp-server-5.2-24.el8.x86_64.rpm                         123 kB/s |  49 kB     00:00    
+(4/6): dhcp-server-4.3.6-47.el8.x86_64.rpm                       3.9 MB/s | 529 kB     00:00    
+(5/6): bind-export-libs-9.11.36-3.el8_6.1.x86_64.rpm             579 kB/s | 1.1 MB     00:02    
+(6/6): warewulf-4.3.0-1.git_235c23c.el8.x86_64.rpm               746 kB/s | 8.3 MB     00:11    
+-------------------------------------------------------------------------------------------------
+Total                                                            799 kB/s |  10 MB     00:13     
+CIQ Stable                                                       1.6 MB/s | 1.7 kB     00:00    
+Importing GPG key 0xD71AB47F:
+ Userid     : "Ctrl IQ, Inc. "
+ Fingerprint: 0BF7 3422 0FF7 326C 5DE9 E196 E97E 8F85 D71A B47F
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-ctrliq
+Key imported successfully
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                1/1 
+  Installing       : dhcp-libs-12:4.3.6-47.el8.x86_64               1/6 
+  Installing       : dhcp-common-12:4.3.6-47.el8.noarch             2/6 
+  Installing       : bind-export-libs-32:9.11.36-3.el8_6.1.x86_64   3/6 
+  Running scriptlet: bind-export-libs-32:9.11.36-3.el8_6.1.x86_64   3/6 
+  Running scriptlet: dhcp-server-12:4.3.6-47.el8.x86_64             4/6 
+  Installing       : dhcp-server-12:4.3.6-47.el8.x86_64             4/6 
+  Running scriptlet: dhcp-server-12:4.3.6-47.el8.x86_64             4/6 
+  Installing       : tftp-server-5.2-24.el8.x86_64                  5/6 
+  Running scriptlet: tftp-server-5.2-24.el8.x86_64                  5/6 
+  Running scriptlet: warewulf-4.3.0-1.git_235c23c.el8.x86_64        6/6 
+  Installing       : warewulf-4.3.0-1.git_235c23c.el8.x86_64        6/6 
+  Running scriptlet: warewulf-4.3.0-1.git_235c23c.el8.x86_64        6/6 
+  Verifying        : tftp-server-5.2-24.el8.x86_64                  1/6 
+  Verifying        : bind-export-libs-32:9.11.36-3.el8_6.1.x86_64   2/6 
+  Verifying        : dhcp-common-12:4.3.6-47.el8.noarch             3/6 
+  Verifying        : dhcp-libs-12:4.3.6-47.el8.x86_64               4/6 
+  Verifying        : dhcp-server-12:4.3.6-47.el8.x86_64             5/6 
+  Verifying        : warewulf-4.3.0-1.git_235c23c.el8.x86_64        6/6 
+ 
+Installed:
+  bind-export-libs-32:9.11.36-3.el8_6.1.x86_64      dhcp-common-12:4.3.6-47.el8.noarch          
+  dhcp-libs-12:4.3.6-47.el8.x86_64                  dhcp-server-12:4.3.6-47.el8.x86_64          
+  tftp-server-5.2-24.el8.x86_64                     warewulf-4.3.0-1.git_235c23c.el8.x86_64     
+ 
+Complete!
+
+[root@warewulf ~]# /etc/warewulf/warewulf.conf
+	- ipaddr: 192.168.200.20
+	- network: 192.168.200.0
+	- range start: 192.168.200.50
+	- range end: 192.168.200.99
+	- netmask: 255.255.255.0
+	
+[root@warewulf ~]# wwctl configure --all
+[sudo] password for laytonjb: 
+Building overlay for localhost.localdomain: host
+Enabling and restarting the DHCP services
+Created symlink /etc/systemd/system/multi-user.target.wants/dhcpd.service --> /usr/lib/systemd/system/dhcpd.service.
+Building overlay for localhost.localdomain: host
+Enabling and restarting the NFS services
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service --> /usr/lib/systemd/system/nfs-server.service.
+Updating system keys
+Setting up key: ssh_host_rsa_key
+Setting up key: ssh_host_dsa_key
+Setting up key: ssh_host_ecdsa_key
+Setting up key: ssh_host_ed25519_key
+Skipping, authorized_keys already exists: /root/.ssh/authorized_keys
+Writing PXE files to: /var/lib/tftpboot/warewulf
+Enabling and restarting the TFTP services
+Created symlink /etc/systemd/system/sockets.target.wants/tftp.socket --> /usr/lib/systemd/system/tftp.socket.
+
+[root@warewulf ~]# systemctl status dhcpd tftp nfs-server
+dhcpd.service - DHCPv4 Server Daemon
+   Loaded: loaded (/usr/lib/systemd/system/dhcpd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sat 2022-11-05 08:51:10 EDT; 35s ago
+     Docs: man:dhcpd(8)
+           man:dhcpd.conf(5)
+ Main PID: 4866 (dhcpd)
+   Status: "Dispatching packets..."
+    Tasks: 1 (limit: 48440)
+   Memory: 9.7M
+   CGroup: /system.slice/dhcpd.service
+           |-4866 /usr/sbin/dhcpd -f -cf /etc/dhcp/dhcpd.conf -user dhcpd -group dhcpd --no-pid
+
+ tftp.service - Tftp Server
+   Loaded: loaded (/usr/lib/systemd/system/tftp.service; indirect; vendor preset: disabled)
+   Active: active (running) since Sat 2022-11-05 08:51:11 EDT; 1min 8s ago
+     Docs: man:in.tftpd
+ Main PID: 4961 (in.tftpd)
+    Tasks: 1 (limit: 48440)
+   Memory: 236.0K
+   CGroup: /system.slice/tftp.service
+           |-4961 /usr/sbin/in.tftpd -s /var/lib/tftpboot
+ 
+Nov 05 08:51:11 localhost.localdomain systemd[1]: Started Tftp Server.
+
+nfs-server.service - NFS server and services
+Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+Drop-In: /run/systemd/generator/nfs-server.service.d
+|-order-with-mounts.conf
+Active: active (exited) since Sat 2022-11-05 08:51:10 EDT; 1min 29s ago
+Main PID: 4924 (code=exited, status=0/SUCCESS)
+Tasks: 0 (limit: 48440)
+Memory: 0B
+CGroup: /system.slice/nfs-server.service
+
+Nov 05 08:51:10 localhost.localdomain systemd[1]: Starting NFS server and services...
+Nov 05 08:51:10 localhost.localdomain systemd[1]: Started NFS server and services.
+ 
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: 
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: No subnet declaration for enp2s0 (192.168.5.18).
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: ** Ignoring requests on enp2s0.  If this is not wh>
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]:    you want, please write a subnet declaration
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]:    in your dhcpd.conf file for the network segment
+Nov 05 08:51:10 localhost.localdomain systemd[1]: Started DHCPv4 Server Daemon.
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]:    to which interface enp2s0 is attached. **
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: 
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: Sending on   Socket/fallback/fallback-net
+Nov 05 08:51:10 localhost.localdomain dhcpd[4866]: Server starting service.
+
+[root@warewulf ~]# systemctl enable --now tftp
+
+[root@warewulf ~]# systemctl start tftp
+
+[root@warewulf ~]# systemctl enable --now warewulfd
+
+Created symlink /etc/systemd/system/multi-user.target.wants/warewulfd.service --> /usr/lib/systemd/system/warewulfd.service.
+
+[root@warewulf ~]# wwctl server status
+
+SERV   : Warewulf server is running at PID: 5127
+
+[root@warewulf ~]# more /var/log/warewulfd.log
+
+[Sat Nov  5 08:53:25 EDT 2022] SERV   : Starting HTTPD REST service on port 9873
+
+[root@warewulf ~]# wwctl container import docker://warewulf/rocky rocky-8
+Getting image source signatures
+Copying blob 1a930d163dca done  
+Copying blob d3ca234f568b done  
+Copying blob 3b38e1016650 done  
+Copying config aff218cbc1 done  
+Writing manifest to image destination
+Storing signatures
+2022/11/05 08:56:13  info unpack layer: sha256:1a930d163dcafa193dc2c3c005d9c220ae1c07a48cad5f7feed0066ada0b998f
+2022/11/05 08:56:15  info unpack layer: sha256:d3ca234f568b088b991388a0e9e8b61b05ac8627522f10fe16df2b81d51c0748
+2022/11/05 08:56:22  info unpack layer: sha256:3b38e1016650813dc5e3bb98cabcc9bf6167399caee7806bc1ca9f3df9825f2e
+Updating the container's /etc/resolv.conf
+uid./gid not synced, run 
+
+
+[root@warewulf ~]# wwctl container syncuser --write rocky-8
+to synchronize uid/gids.
+Building container: rocky-8
+Created image for VNFS container rocky-8: /var/lib/warewulf/container/rocky-8.img
+Compressed image for VNFS container rocky-8: /var/lib/warewulf/container/rocky-8.img.gz
+
+[root@warewulf ~]# wwctl container syncuser --write rocky-8
+
+[root@warewulf ~]# wwctl container list
+CONTAINER NAME            NODES  KERNEL VERSION
+rocky-8                   0      4.18.0-372.13.1.el8_6.x86_64
+
+[root@warewulf ~]# wwctl container exec rocky-8 /bin/bash
+
+[rocky-8] Warewulf> cat /etc/rocky-release
+Rocky Linux release 8.6 (Green Obsidian)
+[rocky-8] Warewulf> exit
+exit
++ LANG=C
++ LC_CTYPE=C
++ export LANG LC_CTYPE
++ dnf clean all
+0 files removed
+Rebuilding container...
+Created image for VNFS container rocky-8: /var/lib/warewulf/container/rocky-8.img
+Compressed image for VNFS container rocky-8: /var/lib/warewulf/container/rocky-8.img.gz
+
+[rocky-8] Warewulf> exit
+
+[root@warewulf ~]# wwctl container list
+CONTAINER NAME            NODES  KERNEL VERSION
+rocky-8                   0      4.18.0-372.13.1.el8_6.x86_64
+
+[root@warewulf ~]# wwctl container import docker://registry.opensuse.org/science/warewulf/tumbleweed/containerfile/kernel:latest tw
+
+[root@warewulf ~]# wwctl kernel import -DC tw
+
+[root@warewulf ~]# wwctl container list
+
+[root@warewulf ~]# wwctl kernel list
+wwctl kernel list
+KERNEL NAME                         KERNEL VERSION            NODES 
+4.18.0-372.9.1.el8.x86_64 
+
+[root@warewulf ~]# wwctl node list -a
+
+[root@warewulf ~]# wwctl node add --netdev ens33 --hwaddr 00:0C:29:EA:1B:F0 --ipaddr 192.168.200.60 --netmask 255.255.255.0 n0001
+
+[root@warewulf ~]# wwctl node list -a
+
+[root@warewulf ~]# wwctl node set --container rocky-8 n0001
+
+[root@warewulf ~]# wwctl node list -a  n0001 | grep Container
+
+[root@warewulf ~]# wwctl container exec rocky-8 /bin/bash
+
+[rocky-8] Warewulf> yum install passwd
+
+
+[rocky-8] Warewulf> whereis passwd
+
+[rocky-8] Warewulf> passwd root
+
+[rocky-8] Warewulf> exit
+
+
+go to the client machine
+it will automatically boot the machine
+and take id and passwd
+
