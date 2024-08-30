@@ -1,0 +1,72 @@
+xCAT statefull installation
+```````````````````````````
+xcat  (Extreme Cloud Administration Toolkit) 
+
+
+1. Machine 1 - Nat and Host only - Master
+2. Machine 2 - Host only - client
+
+
+Master machine 
+``````````````
+
+ # systemctl disable firewalld
+ # systemctl stop firewalld
+ 
+ # yum -y install yum-utils -  is used to install the yum-utils package on a system running a Linux distribution that uses the YUM package manager.
+ # wget -P /etc/yum.repos.d https://xcat.org/files/xcat/repos/yum/latest/xcat-core/xcat-core.repo 
+	- wget ->  is used to download a repository configuration file and place it in the specified directory.
+	- -P /etc/yum.repos.d -> This option specifies the directory where the downloaded file should be saved.
+	- https://xcat.org/files/xcat/repos/yum/latest/xcat-core/xcat-core.repo -> This is the URL of the file 
+		you want to download. It's a repository configuration file for the xCAT (Extreme Cloud Administration Toolkit) core components. 
+		The file will be named xcat-core.repo.
+	
+	
+ # wget -P /etc/yum.repos.d https://xcat.org/files/xcat/repos/yum/xcat-dep/rh7/x86_64/xcat-dep.repo
+ 
+ # yum -y install xCAT -> The name of the package
+ 
+ # . /etc/profile.d/xcat.sh ->  is used to execute the contents of the xcat.sh script and thereby 
+								update the environment variables for the current shell session.
+								
+ #	ifconfig ${sms_eth_internal} ${sms_ip} netmask ${internal_netmask} up
+	- ifconfig eth1 192.168.1.1 netmask 255.255.255.0 up
+	-	 to configure a network interface with a specific IP address and netmask. Here's the breakdown of the command.
+	
+ # chdef -t site dhcpinterfaces="xcatmn|${sms_eth_internal}"
+	-	chdef -> is used in xCAT (Extreme Cloud Administration Toolkit) 
+		to change or define attributes of xCAT objects. In this 
+		case, it looks like you're trying to set the DHCP interfaces 
+		for the xCAT management node (mn). Let's break down the command:
+	-	-t site: Specifies that you are changing attributes of the xCAT site.
+	-	dhcpinterfaces="xcatmn|${sms_eth_internal}": This is setting the dhcpinterfaces 
+		attribute for the xCAT site. It is specifying that the DHCP server should listen on the specified network interface.
+		
+ # copycds ${iso_path}/CentOS-7-x86_64-DVD-1908.iso
+ 
+  # Define nodes as objects in xCAT database[sms]# for ((i=0; i<$num_computes; i++)) ; do 
+														mkdef -t node ${c_name[$i]} groups=compute,all ip=${c_ip[$i]} mac=${c_mac[$i]} netboot=xnba \
+														arch=x86_64 bmc=${c_bmc[$i]} bmcusername=${bmc_username} bmcpassword=${bmc_password} \ 
+														mgt=ipmi serialport=0 serialspeed=115200
+														done
+	
+	
+	
+
+ # chtab key=system passwd.username=root passwd.password=openssl rand -base64 12
+ 
+ # chdef -t site domain=${domain_name}
+ 
+  Complete network service configurations
+  # makehosts
+  # makenetworks
+  # makedhcp -n
+  # makedns -n
+  
+  
+  Associate desired provisioning image for computes
+  # nodeset compute osimage=centos7.7-x86_64-install-compute
+  
+  # rsetboot compute net
+  
+  # rpower compute reset

@@ -1,0 +1,105 @@
+xcat installation on rocky linux 8.8 :--
+---------------------------------------------------------
+[set hostname on master node ]
+
+hostnamectl set-hostname hpcmaster.hpc
+
+[edit the /etc/hosts file. ]
+vi /etc/hosts
+
+192.168.1.215	hpcmaster	hpcmaster.hpc
+192.168.1.216	cn01	cn01.hpc
+
+[ download and install xcat using go-xcat ]
+wget https://raw.githubusercontent.com/xcat2/xcat-core/master/xCAT-server/share/xcat/tools/go-xcat -O - >/tmp/go-xcat
+chmod +x /tmp/go-xcat
+
+/tmp/go-xcat install 
+source /etc/profile.d/xcat.sh
+
+/tmp/go-xcat -x devel install
+source /etc/profile.d/xcat.sh
+
+[ copying rocky linux iso file to the server for mounting ]
+mkdir /iso/
+mv Rocky-8.8-x86_64-dvd1.iso /iso
+
+mkdir /mnt/rhel8
+
+[to check ]
+df -hT
+
+[mounting]
+mount -o loop /iso/Rocky-8.8-x86_64-dvd1.iso /mnt/rhel8/
+
+[to check ]
+df -hT
+
+[to see the status of xcat ][if not started the start it]
+systemctl status xcatd.service
+
+systemctl start xcatd.service
+
+[ to check the version of xcat installed ]
+lsxcatd -a
+
+[changing definition of interface on site table ]
+chdef -t site dhcpinterface="ens22f0"
+
+[to see the table ]
+tabedit site
+
+copycds /iso/Rocky-8.8-x86_64-dvd1.iso
+
+[to check ]
+ls /install/
+lsdef -t osimage
+
+chdef -t site domain=hpc
+
+[to check ]
+tabedit site
+
+[assigning username and password for guest os ]
+chtab key=system passwd.username=root passwd.password=root@1234
+
+[ to check ]
+tabdump passwd
+
+[ making definition of node and bmc ]
+mkdef -t node cn01 --template x86_64-template ip=192.168.1.216 mac=6c:92:cf:07:60:14 bmc=192.168.1.212 bmcusername=admin bmcpassword=hpinvent
+
+[assign the osimage ]
+nodeset cn01 osimage=rocky8.8-x86_64-install-compute
+
+makehosts
+makenetworks
+makedhcp -n
+makedhcp -a
+makedns -n
+makedns -a
+
+[run xcat probe command and resovle if any error comes ]
+xcatprobe xcatmn -i ens22f0
+
+[ check the status of dhcp ]
+systemctl status dhcpd
+
+[if nameserver error comes ]
+vim /etc/resolv.conf
+nameserver 192.168.1.1
+
+[ to see the table ]
+tabdump site
+
+tabedit networks
+
+[ to check the node status ]
+lsdef -t node cn01
+lsdef cn01
+
+[ to see the status of object , if it display "on" then we can go ahead , if it displays "timeout" try to restart the master server ]
+rpower cn01 stat
+
+[ to begin provisoning ]
+rinstall cn01 osimage=rocky8.8-x86_64-install-compute
